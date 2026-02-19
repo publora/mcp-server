@@ -1,0 +1,44 @@
+{
+  "name": "@publora/mcp-server",
+  "version": "1.0.0",
+  "description": "Official MCP server for Publora - control social media scheduling from AI assistants",
+  "main": "src/index.js",
+  "bin": {
+    "publora-mcp": "src/index.js"
+  },
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "node --test src/index.test.js"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "publora",
+    "social-media",
+    "scheduling",
+    "ai",
+    "claude",
+    "cursor",
+    "linkedin",
+    "twitter",
+    "instagram"
+  ],
+  "author": "Publora (Creative Content Crafts, Inc.)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/publora/mcp-server.git"
+  },
+  "bugs": {
+    "url": "https://github.com/publora/mcp-server/issues"
+  },
+  "homepage": "https://github.com/publora/mcp-server#readme",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.1",
+    "express": "^5.2.1",
+    "zod": "^3.24.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
