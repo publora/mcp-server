@@ -15,6 +15,8 @@ List your posts with filters.
 - `toDate` (optional): ISO 8601 date
 - `page` (optional): Page number (default: 1)
 - `limit` (optional): Results per page (default: 20, max: 100)
+- `sortBy` (optional): Sort field: `createdAt`, `updatedAt`, `scheduledTime`
+- `sortOrder` (optional): Sort direction: `asc` or `desc`
 
 **Example prompts:**
 - "Show my scheduled posts"
@@ -150,7 +152,7 @@ Get follower count or growth.
 **Parameters:**
 - `platformId` (required): Platform connection ID
 - `period` (optional): `lifetime` or `daily`
-- `dateRange` (optional): For daily period, specify start/end dates
+- `dateRange` (optional): For daily period: `{start: {year, month, day}, end: {year, month, day}}`
 
 **Example prompts:**
 - "How many LinkedIn followers do I have?"
@@ -164,7 +166,7 @@ Get combined profile overview.
 
 **Parameters:**
 - `platformId` (required): Platform connection ID
-- `dateRange` (optional): Date range for stats
+- `dateRange` (optional): Date range: `{start: {year, month, day}, end: {year, month, day}}`
 
 **Example prompts:**
 - "Give me a summary of my LinkedIn profile"
