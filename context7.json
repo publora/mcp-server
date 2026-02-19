@@ -1,0 +1,15 @@
+{
+  "projectTitle": "Publora MCP Server",
+  "description": "MCP server for social media scheduling and management via AI assistants like Claude Cursor VSCode supporting Twitter LinkedIn Instagram Threads TikTok YouTube Facebook Bluesky Mastodon Telegram with analytics and cross-platform posting",
+  "folders": ["docs"],
+  "excludeFolders": ["node_modules", "src", ".git"],
+  "excludeFiles": ["package-lock.json"],
+  "rules": [
+    "Publora MCP server is hosted at mcp.publora.com",
+    "Authentication uses Bearer token with Publora API key (sk_...)",
+    "16 MCP tools available for posts, connections, analytics, and workspace",
+    "Supports 10 platforms: Twitter, LinkedIn, Instagram, Threads, TikTok, YouTube, Facebook, Bluesky, Mastodon, Telegram",
+    "No coding required - users describe tasks in natural language",
+    "Pricing starts at $5.40/month with full API and MCP access"
+  ]
+}
