@@ -122,7 +122,7 @@ Get engagement metrics for a LinkedIn post.
 **Parameters:**
 - `postedId` (required): LinkedIn post URN (e.g., `urn:li:share:123456`)
 - `platformId` (required): Platform connection ID
-- `queryTypes` (optional): Metrics to fetch (`IMPRESSION`, `REACTION`, `COMMENT`, `SHARE`)
+- `queryTypes` (optional): Metrics to fetch (`IMPRESSION`, `MEMBERS_REACHED`, `RESHARE`, `REACTION`, `COMMENT`)
 
 **Example prompts:**
 - "How did my last LinkedIn post perform?"
