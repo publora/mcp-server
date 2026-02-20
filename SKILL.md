@@ -21,7 +21,15 @@ This skill provides documentation for connecting AI assistants to Publora via MC
 
 **Transport:** Streamable HTTP
 
-**Authentication:** Bearer token with Publora API key
+## Authentication
+
+Publora uses **API keys** (not OAuth tokens). Keys never expire and don't require refresh.
+
+**Get your key:** publora.com → Settings → API Keys
+
+**MCP Header:** `Authorization: Bearer sk_your_api_key`
+
+**Note:** The REST API uses `x-publora-key: sk_...` instead. Same key, different header format for MCP compatibility.
 
 ## Quick Setup
 
