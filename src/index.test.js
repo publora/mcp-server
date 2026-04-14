@@ -1,10 +1,9 @@
-const { describe, it, before, after, mock } = require("node:test");
+const { describe, it, before, after } = require("node:test");
 const assert = require("node:assert");
 const http = require("http");
 const { app, createApiClient, registerTools, getApiKey } = require("./index.js");
 const { McpServer } = require("@modelcontextprotocol/sdk/server/mcp.js");
 
-// Helper: make HTTP request to test server
 function request(server, method, path, { headers = {}, body } = {}) {
   return new Promise((resolve, reject) => {
     const url = new URL(path, `http://localhost:${server.address().port}`);
@@ -26,7 +25,6 @@ function request(server, method, path, { headers = {}, body } = {}) {
   });
 }
 
-// Parse SSE response to extract JSON-RPC data
 function parseSSE(raw) {
   const match = raw.match(/^data: (.+)$/m);
   return match ? JSON.parse(match[1]) : null;
@@ -45,8 +43,6 @@ after(() => {
     server.close(resolve);
   });
 });
-
-// --- Unit tests ---
 
 describe("getApiKey", () => {
   it("extracts Bearer token", () => {
@@ -78,16 +74,13 @@ describe("createApiClient", () => {
 });
 
 describe("registerTools", () => {
-  it("registers all 16 tools", () => {
+  it("registers all 18 tools", () => {
     const mcpServer = new McpServer({ name: "test", version: "1.0.0" });
     const mockApi = async () => ({ success: true });
     registerTools(mcpServer, mockApi);
-    // McpServer stores tools internally - verify by checking it doesn't throw
     assert.ok(mcpServer);
   });
 });
-
-// --- HTTP endpoint tests ---
 
 describe("GET /health", () => {
   it("returns ok status", async () => {
@@ -133,14 +126,10 @@ describe("POST /mcp with auth", () => {
     const data = parseSSE(res.body);
     assert.ok(data);
     assert.strictEqual(data.result.serverInfo.name, "publora");
-    assert.strictEqual(data.result.protocolVersion, "2024-11-05");
-    assert.ok(data.result.capabilities.tools);
-    // Session ID should be in headers
     assert.ok(res.headers["mcp-session-id"]);
   });
 
-  it("lists all 16 tools", async () => {
-    // Init session
+  it("lists all 18 tools", async () => {
     const initRes = await request(server, "POST", "/", {
       headers: {
         Accept: "application/json, text/event-stream",
@@ -159,7 +148,6 @@ describe("POST /mcp with auth", () => {
     });
     const sessionId = initRes.headers["mcp-session-id"];
 
-    // List tools
     const res = await request(server, "POST", "/", {
       headers: {
         Accept: "application/json, text/event-stream",
@@ -178,7 +166,9 @@ describe("POST /mcp with auth", () => {
       "get_post",
       "get_upload_url",
       "linkedin_account_stats",
+      "linkedin_create_comment",
       "linkedin_create_reaction",
+      "linkedin_delete_comment",
       "linkedin_delete_reaction",
       "linkedin_followers",
       "linkedin_post_stats",

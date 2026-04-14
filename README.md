@@ -105,7 +105,7 @@ Server runs on `http://localhost:3100`
 
 ---
 
-## Available Tools (16)
+## Available Tools (18)
 
 ### Posts
 | Tool | Description |
@@ -131,6 +131,8 @@ Server runs on `http://localhost:3100`
 | `linkedin_profile_summary` | Combined profile overview |
 | `linkedin_create_reaction` | React to a post |
 | `linkedin_delete_reaction` | Remove a reaction |
+| `linkedin_create_comment` | Post a comment on a LinkedIn post |
+| `linkedin_delete_comment` | Delete a comment |
 
 ### Workspace (B2B)
 | Tool | Description |

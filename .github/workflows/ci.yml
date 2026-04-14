@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18, 20, 22]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: npm ci
+      - run: npm test
+
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+      - name: npm audit
+        run: npm audit --audit-level=high
+      - name: Check for secrets in code
+        run: |
+          if grep -rEi '(ghp_|sk_live|AKIA|password\s*=\s*["\x27][^"\x27]+|secret\s*=\s*["\x27][^"\x27]+)' src/ --include='*.js' --include='*.ts'; then
+            echo "::error::Potential secrets found in source code"
+            exit 1
+          fi
+          echo "No secrets found"
+      - name: Check for hardcoded URLs to internal services
+        run: |
+          if grep -rEi '(sentry\.|amplitude\.|\.onrender\.com|fly\.dev)' src/ --include='*.js' --include='*.ts'; then
+            echo "::error::Internal service URLs found in public code"
+            exit 1
+          fi
+          echo "No internal URLs found"
+      - name: Verify no dev dependencies in production
+        run: |
+          node -e "
+            const pkg = require('./package.json');
+            const deps = Object.keys(pkg.dependencies || {});
+            const banned = ['nodemon', 'ts-node', 'jest', 'mocha', 'chai'];
+            const found = deps.filter(d => banned.includes(d));
+            if (found.length) { console.error('Dev deps in production:', found); process.exit(1); }
+            console.log('Dependencies OK:', deps.join(', '));
+          "
+      - name: Check package-lock.json integrity
+        run: npm ci --ignore-scripts && echo "Lock file integrity OK"

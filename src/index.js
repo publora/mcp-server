@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+const http = require("http");
 const express = require("express");
 const { McpServer } = require("@modelcontextprotocol/sdk/server/mcp.js");
 const { StreamableHTTPServerTransport } = require("@modelcontextprotocol/sdk/server/streamableHttp.js");
@@ -14,6 +15,7 @@ function createApiClient(apiKey) {
     const url = `${PUBLORA_API_URL}/api/v1${path}`;
     const headers = {
       "x-publora-key": apiKey,
+      "x-publora-client": "mcp",
       "Content-Type": "application/json",
     };
 
@@ -52,7 +54,7 @@ function registerTools(server, apiRequest) {
     {
       content: z.string().describe("Post text content"),
       platforms: z.array(z.string()).describe(
-        "Array of platform identifiers, e.g. ['twitter-123456', 'linkedin-789']. Use list_connections to get valid IDs."
+        "Array of platform identifiers in the exact format returned by list_connections. Each value must be the 'platformId' field copied verbatim from a connection object, e.g. ['twitter-1985855679454986200', 'linkedin-abc123']. IMPORTANT: Do NOT invent or guess IDs — always call list_connections first and use the exact platformId values."
       ),
       scheduledTime: z.string().describe("ISO 8601 datetime for publishing, e.g. '2025-03-01T12:00:00Z'"),
     },
@@ -203,7 +205,6 @@ function registerTools(server, apiRequest) {
     }
   );
 
-  // 11. List posts with filtering and pagination
   server.tool(
     "list_posts",
     "List scheduled/published posts with filtering by status, platform, date range",
@@ -235,7 +236,6 @@ function registerTools(server, apiRequest) {
     }
   );
 
-  // 12. LinkedIn followers statistics
   server.tool(
     "linkedin_followers",
     "Get LinkedIn followers count or daily growth over a date range",
@@ -258,7 +258,6 @@ function registerTools(server, apiRequest) {
     }
   );
 
-  // 13. LinkedIn profile summary
   server.tool(
     "linkedin_profile_summary",
     "Get combined LinkedIn profile overview: followers + post statistics",
@@ -279,7 +278,6 @@ function registerTools(server, apiRequest) {
     }
   );
 
-  // 14. LinkedIn create reaction
   server.tool(
     "linkedin_create_reaction",
     "React to a LinkedIn post (like, praise, etc.)",
@@ -296,7 +294,6 @@ function registerTools(server, apiRequest) {
     }
   );
 
-  // 15. LinkedIn delete reaction
   server.tool(
     "linkedin_delete_reaction",
     "Remove your reaction from a LinkedIn post",
@@ -312,7 +309,6 @@ function registerTools(server, apiRequest) {
     }
   );
 
-  // 16. Detach workspace user
   server.tool(
     "workspace_detach_user",
     "Remove a managed user from workspace",
@@ -321,6 +317,41 @@ function registerTools(server, apiRequest) {
     },
     async ({ userId }) => {
       const data = await apiRequest("DELETE", `/workspace/users/${userId}`);
+      return {
+        content: [{ type: "text", text: JSON.stringify(data, null, 2) }],
+      };
+    }
+  );
+
+  server.tool(
+    "linkedin_create_comment",
+    "Post a comment on a LinkedIn post",
+    {
+      postedId: z.string().describe("LinkedIn post URN, e.g. 'urn:li:share:123456' or 'urn:li:ugcPost:123456'"),
+      platformId: z.string().describe("Platform connection ID, e.g. 'linkedin-XxxYyy'"),
+      message: z.string().describe("Comment text (max 1,250 characters)"),
+      parentComment: z.string().optional().describe("Parent comment URN for nested replies"),
+    },
+    async ({ postedId, platformId, message, parentComment }) => {
+      const body = { postedId, platformId, message };
+      if (parentComment) body.parentComment = parentComment;
+      const data = await apiRequest("POST", "/linkedin-comments", body);
+      return {
+        content: [{ type: "text", text: JSON.stringify(data, null, 2) }],
+      };
+    }
+  );
+
+  server.tool(
+    "linkedin_delete_comment",
+    "Delete a comment from a LinkedIn post",
+    {
+      postedId: z.string().describe("LinkedIn post URN the comment belongs to"),
+      commentId: z.string().describe("Comment URN to delete, e.g. 'urn:li:comment:(urn:li:ugcPost:xxx,123456)'"),
+      platformId: z.string().describe("Platform connection ID"),
+    },
+    async ({ postedId, commentId, platformId }) => {
+      const data = await apiRequest("DELETE", "/linkedin-comments", { postedId, commentId, platformId });
       return {
         content: [{ type: "text", text: JSON.stringify(data, null, 2) }],
       };
@@ -337,25 +368,57 @@ function getApiKey(req) {
   return req.headers["x-publora-key"] || null;
 }
 
+/**
+ * Fix Accept header for MCP clients that don't send required content types.
+ * MCP Streamable HTTP requires "application/json, text/event-stream".
+ */
+function fixAcceptHeader(req) {
+  const accept = req.headers.accept || "";
+  if (!accept.includes("application/json") || !accept.includes("text/event-stream")) {
+    const fixedAccept = "application/json, text/event-stream";
+    req.headers.accept = fixedAccept;
+    if (Array.isArray(req.rawHeaders)) {
+      const idx = req.rawHeaders.findIndex(h => h.toLowerCase() === "accept");
+      if (idx >= 0) {
+        req.rawHeaders[idx + 1] = fixedAccept;
+      } else {
+        req.rawHeaders.push("Accept", fixedAccept);
+      }
+    }
+  }
+}
+
 const app = express();
 app.use(express.json());
 
-// Session store: sessionId -> { transport, server }
+// Session store: sessionId -> { transport, server, createdAt }
 const sessions = new Map();
+const SESSION_TTL_MS = 30 * 60 * 1000; // 30 minutes
+const SESSION_MAX = 100;
+
+setInterval(() => {
+  const now = Date.now();
+  for (const [id, session] of sessions) {
+    if (now - session.createdAt > SESSION_TTL_MS) {
+      sessions.delete(id);
+    }
+  }
+}, 60 * 1000);
 
 // Health check
 app.get("/health", (req, res) => {
   res.json({ status: "ok", service: "publora-mcp" });
 });
 
-// MCP endpoint - handles POST (messages), GET (SSE stream), DELETE (close)
-app.all("/", async (req, res) => {
+// MCP handler
+async function handleMcpRequest(req, res) {
+  fixAcceptHeader(req);
+
   const apiKey = getApiKey(req);
   if (!apiKey) {
     return res.status(401).json({ error: "API key required. Use Authorization: Bearer <key> or x-publora-key header." });
   }
 
-  // For new sessions (POST without session ID), create server + transport
   if (req.method === "POST" && !req.headers["mcp-session-id"]) {
     const mcpServer = new McpServer({
       name: "publora",
@@ -370,12 +433,14 @@ app.all("/", async (req, res) => {
     });
 
     await mcpServer.connect(transport);
-
     const result = transport.handleRequest(req, res, req.body);
 
-    // sessionId is set after handleRequest processes the init request
     if (transport.sessionId) {
-      sessions.set(transport.sessionId, { transport, server: mcpServer });
+      if (sessions.size >= SESSION_MAX) {
+        const oldest = sessions.keys().next().value;
+        sessions.delete(oldest);
+      }
+      sessions.set(transport.sessionId, { transport, server: mcpServer, createdAt: Date.now() });
     }
 
     transport.onclose = () => {
@@ -385,23 +450,37 @@ app.all("/", async (req, res) => {
     return result;
   }
 
-  // Existing session
   const sessionId = req.headers["mcp-session-id"];
   if (sessionId && sessions.has(sessionId)) {
     return sessions.get(sessionId).transport.handleRequest(req, res, req.body);
   }
 
   return res.status(400).json({ error: "Invalid or missing session. Send a POST without mcp-session-id to start." });
-});
+}
+
+app.all("/", handleMcpRequest);
+app.all("/mcp", handleMcpRequest);
 
 // Export for testing
 module.exports = { app, createApiClient, registerTools, getApiKey };
 
 // Start server only when run directly
 if (require.main === module) {
-  app.listen(PORT, () => {
+  const server = http.createServer((req, res) => {
+    fixAcceptHeader(req);
+    app(req, res);
+  });
+
+  server.listen(PORT, () => {
     console.log(`Publora MCP server running on port ${PORT}`);
     console.log(`Backend API: ${PUBLORA_API_URL}`);
     console.log(`MCP endpoint: http://localhost:${PORT}/`);
   });
+
+  function shutdown() {
+    server.close(() => process.exit(0));
+    setTimeout(() => process.exit(1), 5000);
+  }
+  process.on("SIGINT", shutdown);
+  process.on("SIGTERM", shutdown);
 }
