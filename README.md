@@ -1,5 +1,7 @@
 # Publora MCP Server
 
+[![smithery badge](https://smithery.ai/badge/publora/publora-mcp)](https://smithery.ai/servers/publora/publora-mcp)
+
 Official [Model Context Protocol (MCP)](https://modelcontextprotocol.io) server for [Publora](https://publora.com) — control your social media scheduling directly from AI assistants like Claude, Cursor, and any MCP-compatible client.
 
 **No coding required.** Just describe what you want in plain English:
