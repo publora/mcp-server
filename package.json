@@ -4,10 +4,12 @@
   "description": "Official MCP server for Publora - control social media scheduling from AI assistants",
   "main": "src/index.js",
   "bin": {
-    "publora-mcp": "src/index.js"
+    "publora-mcp": "src/index.js",
+    "publora-mcp-stdio": "src/stdio.js"
   },
   "scripts": {
     "start": "node src/index.js",
+    "start:stdio": "node src/stdio.js",
     "test": "node --test src/index.test.js"
   },
   "keywords": [
