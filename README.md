@@ -14,9 +14,13 @@ Official [Model Context Protocol (MCP)](https://modelcontextprotocol.io) server 
 
 ### Remote Server (Recommended)
 
-Publora hosts an MCP server at `mcp.publora.com` — no installation needed.
+Publora hosts an MCP server at `mcp.publora.com/mcp` — no installation needed.
 
-**1. Get your API key** at [publora.com](https://publora.com) → Settings → API
+**Using Claude?** Install it from the connectors directory: [claude.ai/directory/publora](https://claude.ai/directory/publora). Select **Connect**, sign in to Publora, approve. No API key, no config file — on web, desktop and mobile alike.
+
+**Every other client:**
+
+**1. Get your API key** at [app.publora.com/dashboard/api](https://app.publora.com/dashboard/api) (**API** in the dashboard sidebar)
 
 **2. Add to your MCP client:**
 
@@ -25,14 +29,16 @@ Publora hosts an MCP server at `mcp.publora.com` — no installation needed.
   "mcpServers": {
     "publora": {
       "type": "http",
-      "url": "https://mcp.publora.com",
+      "url": "https://mcp.publora.com/mcp",
       "headers": {
-        "Authorization": "Bearer YOUR_API_KEY"
+        "Authorization": "Bearer sk_YOUR_API_KEY"
       }
     }
   }
 }
 ```
+
+Clients that support OAuth (Claude Code, Cursor, VS Code, Codex and others) can leave out `headers` and sign in through the browser instead.
 
 **3. Restart your client** and start talking to your AI about social media!
 
@@ -43,31 +49,42 @@ Publora hosts an MCP server at `mcp.publora.com` — no installation needed.
 <details>
 <summary><b>Claude Code (CLI)</b></summary>
 
-Edit `~/.claude.json` or create `.mcp.json` in your project:
-
-```json
-{
-  "mcpServers": {
-    "publora": {
-      "type": "http",
-      "url": "https://mcp.publora.com",
-      "headers": {
-        "Authorization": "Bearer sk_YOUR_API_KEY"
-      }
-    }
-  }
-}
+```bash
+claude mcp add --transport http --scope user publora https://mcp.publora.com/mcp
 ```
 
-Restart Claude Code. Verify with `/mcp` command.
+Run `/mcp`, select **publora**, choose **Authenticate** and sign in to Publora in the browser. No API key needed.
+
+For CI or headless machines, send a static key instead:
+
+```bash
+claude mcp add --transport http --scope user publora https://mcp.publora.com/mcp \
+  --header "Authorization: Bearer sk_YOUR_API_KEY"
+```
+
+The same entry can go in `~/.claude.json` or a project `.mcp.json` (JSON above). Verify with the `/mcp` command.
 </details>
 
 <details>
 <summary><b>Claude Desktop</b></summary>
 
-1. Open Claude Desktop → **Settings** → **Developer** → **Edit Config**
-2. Add the Publora server (same JSON as above)
-3. Restart Claude Desktop
+Claude Desktop uses the same connectors as Claude on the web: open [claude.ai/directory/publora](https://claude.ai/directory/publora) and select **Connect**. There is no config file to edit.
+
+**Settings → Developer → Edit Config** is only needed to run this repository locally over stdio, after cloning it and running `npm install` (see **Local Development** for how its tools differ from the hosted server):
+
+```json
+{
+  "mcpServers": {
+    "publora": {
+      "command": "node",
+      "args": ["/path/to/mcp-server/src/stdio.js"],
+      "env": {
+        "PUBLORA_API_KEY": "sk_YOUR_API_KEY"
+      }
+    }
+  }
+}
+```
 </details>
 
 <details>
@@ -80,7 +97,7 @@ Create `.cursor/mcp.json` in your project:
   "mcpServers": {
     "publora": {
       "type": "http",
-      "url": "https://mcp.publora.com",
+      "url": "https://mcp.publora.com/mcp",
       "headers": {
         "Authorization": "Bearer sk_YOUR_API_KEY"
       }
@@ -103,45 +120,55 @@ PUBLORA_API_URL=https://api.publora.com npm start
 ```
 
 Server runs on `http://localhost:3100`
+
+The code in this repository is an April 2026 snapshot of the server. Its tool set is older: it has LinkedIn analytics and workspace tools, and lacks `complete_media`, `delete_media`, `prune_media_reference`, `post_stats`, `profile_stats`, `linkedin_create_reshare` and `linkedin_list_mentionables`. Use the hosted server for the current tools.
 </details>
 
 ---
 
 ## Available Tools (18)
 
+The hosted server at `mcp.publora.com/mcp` exposes:
+
 ### Posts
 | Tool | Description |
 |------|-------------|
 | `list_posts` | List posts with filters (status, platform, dates) |
-| `create_post` | Schedule a post to one or more platforms |
+| `create_post` | Create a draft or schedule a post; accepts `mediaUrls` and `platformSettings` |
 | `get_post` | Get post details and status |
-| `update_post` | Reschedule or change status |
+| `update_post` | Edit a draft or scheduled post: content, platforms, schedule, status |
 | `delete_post` | Delete a post |
-| `get_upload_url` | Get presigned URL for media upload |
+
+### Media
+| Tool | Description |
+|------|-------------|
+| `get_upload_url` | Get a presigned URL for media upload |
+| `complete_media` | Finalize a file uploaded via `get_upload_url` |
+| `delete_media` | Remove a media slot from a post |
+| `prune_media_reference` | Remove a stale media reference that `delete_media` cannot handle |
 
 ### Connections
 | Tool | Description |
 |------|-------------|
 | `list_connections` | List connected social accounts |
 
-### LinkedIn Analytics
+### Statistics (Mastodon and Bluesky, Pro or Premium plan)
 | Tool | Description |
 |------|-------------|
-| `linkedin_post_stats` | Post engagement metrics |
-| `linkedin_account_stats` | Account-level statistics |
-| `linkedin_followers` | Follower count and growth |
-| `linkedin_profile_summary` | Combined profile overview |
+| `post_stats` | Engagement counters for published posts |
+| `profile_stats` | Followers, following and post count of a connected account |
+
+### LinkedIn Engagement
+| Tool | Description |
+|------|-------------|
 | `linkedin_create_reaction` | React to a post |
 | `linkedin_delete_reaction` | Remove a reaction |
 | `linkedin_create_comment` | Post a comment on a LinkedIn post |
 | `linkedin_delete_comment` | Delete a comment |
+| `linkedin_create_reshare` | Repost/reshare a LinkedIn post |
+| `linkedin_list_mentionables` | List people you can @mention in a LinkedIn post |
 
-### Workspace (B2B)
-| Tool | Description |
-|------|-------------|
-| `list_workspace_users` | List team members |
-| `create_workspace_user` | Add a user |
-| `workspace_detach_user` | Remove a user |
+LinkedIn analytics and workspace management are available through the [REST API](https://docs.publora.com), not MCP. Full parameters: [MCP Tools Reference](https://docs.publora.com/mcp/tools-reference).
 
 ---
 
@@ -155,9 +182,9 @@ Server runs on `http://localhost:3100`
 > You: Post "We're hiring!" to all my accounts
 > AI: Published to Twitter, LinkedIn, and Bluesky.
 
-**Check analytics:**
-> You: How did my LinkedIn posts perform this week?
-> AI: 5 posts, 4,230 impressions, 89 reactions. Best: Monday's update (1,850 impressions).
+**Check engagement (Mastodon, Bluesky):**
+> You: How did my last Bluesky post do?
+> AI: 42 likes, 7 reposts and 3 replies so far.
 
 **Content calendar:**
 > You: What do I have scheduled for next week?
@@ -182,11 +209,13 @@ Twitter/X · LinkedIn · Instagram · Threads · TikTok · YouTube · Facebook �
 
 ## Authentication
 
-Use your Publora API key via:
+Clients that support OAuth 2.1 (Claude, Claude Code, Cursor, VS Code, Codex and others) sign in through the browser — no key to copy.
+
+Everywhere else, use your Publora API key via:
 - `Authorization: Bearer sk_...` (recommended)
 - `x-publora-key: sk_...`
 
-Get your key: [publora.com](https://publora.com) → Settings → API
+Get your key: [app.publora.com/dashboard/api](https://app.publora.com/dashboard/api)
 
 ---
 
@@ -197,7 +226,7 @@ Get your key: [publora.com](https://publora.com) → Settings → API
 curl https://mcp.publora.com/health
 
 # Test MCP handshake
-curl -X POST https://mcp.publora.com \
+curl -X POST https://mcp.publora.com/mcp \
   -H "Content-Type: application/json" \
   -H "Accept: application/json, text/event-stream" \
   -H "Authorization: Bearer sk_YOUR_API_KEY" \
