@@ -129,13 +129,15 @@ Examples:
 **Cause:** Content exceeds platform limits.
 
 **Platform limits:**
-- Twitter/X: 280 characters
+- Twitter/X: 280 characters (longer text is split into a thread automatically)
 - LinkedIn: 3,000 characters
 - Instagram: 2,200 characters
-- Threads: 500 characters
+- Threads: 500 characters per part (longer text is split into a chain of replies automatically)
 - Bluesky: 300 characters
 - Mastodon: 500 characters
 - Telegram: 4,096 characters
+
+On X and Threads over-limit text is not rejected: it becomes a multi-part thread. A Threads chain needs the `threads_manage_replies` permission; without it the post fails with `THREADS_PERMISSION_REQUIRED` before anything is published, so reconnect the account in Publora Channels.
 
 ---
 
