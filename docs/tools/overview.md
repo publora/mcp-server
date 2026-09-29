@@ -1,6 +1,18 @@
 # Publora MCP Tools Overview
 
-Publora provides 16 MCP tools for managing social media via AI assistants.
+This page describes the 16 tools in this repository's older local server
+snapshot. The hosted server has additional tools and fields; see the
+[hosted server tool reference](https://docs.publora.com/mcp/tools-reference).
+
+On the hosted server, personal `create_post`/`update_post` accept up to three
+ordered `firstComments: [{ text, platforms?, delaySeconds? }]` (integer delay
+0–86,400 seconds). The legacy `firstComment` object remains available for one
+comment. Use one input form at a time; `firstComments: null` or `[]` clears the
+list on update. `get_post` exposes `posts[].firstCommentResults[]` in order,
+with legacy `firstCommentResult` mirroring item 0. Agency
+`company_save_post` accepts one `draft.firstComment`; read its result with
+`company_posts` action `detail`. The local snapshot below does not implement
+these hosted features.
 
 ## Posts (6 tools)
 
