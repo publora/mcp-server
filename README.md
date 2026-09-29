@@ -126,7 +126,7 @@ The code in this repository is an April 2026 snapshot of the server. Its tool se
 
 ---
 
-## Available Tools (18)
+## Selected Hosted Tools
 
 The hosted server at `mcp.publora.com/mcp` exposes:
 
@@ -134,9 +134,9 @@ The hosted server at `mcp.publora.com/mcp` exposes:
 | Tool | Description |
 |------|-------------|
 | `list_posts` | List posts with filters (status, platform, dates) |
-| `create_post` | Create a draft or schedule a post; accepts `mediaUrls` and `platformSettings` |
-| `get_post` | Get post details and status |
-| `update_post` | Edit a draft or scheduled post: content, platforms, schedule, status |
+| `create_post` | Create a draft or schedule a post; accepts `mediaUrls`, `platformSettings`, and ordered `firstComments` (or legacy `firstComment`) |
+| `get_post` | Get post details, including per-target `firstCommentResults[]` |
+| `update_post` | Edit a draft or scheduled post: content, platforms, schedule, status, and first comments |
 | `delete_post` | Delete a post |
 
 ### Media
@@ -168,7 +168,30 @@ The hosted server at `mcp.publora.com/mcp` exposes:
 | `linkedin_create_reshare` | Repost/reshare a LinkedIn post |
 | `linkedin_list_mentionables` | List people you can @mention in a LinkedIn post |
 
-LinkedIn analytics and workspace management are available through the [REST API](https://docs.publora.com), not MCP. Full parameters: [MCP Tools Reference](https://docs.publora.com/mcp/tools-reference).
+### Agency
+| Tool | Description |
+|------|-------------|
+| `company_save_post` | Create or update a client draft; accepts one `draft.firstComment` |
+| `company_posts` | Read client posts and per-target first-comment results with `action: "detail"` |
+
+LinkedIn analytics are also available through the [REST API](https://docs.publora.com). Full personal-tool parameters: [MCP Tools Reference](https://docs.publora.com/mcp/tools-reference).
+
+### First comments on the hosted server
+
+Personal `create_post` and `update_post` accept `firstComments` with up to three
+ordered `{ text, platforms?, delaySeconds? }` items. `platforms` contains platform
+types such as `linkedin`, never connection IDs. `delaySeconds` is an integer from
+0 to 86,400; omit it for zero. Each later comment waits until the preceding
+one posts, and a failure stops the sequence. Delivery runs on scheduler ticks.
+Use the older `firstComment: { text, platforms? }` for one comment; never send
+both fields. `firstComments: null` or `[]` clears the list on update. Read
+`get_post` → `posts[].firstCommentResults[]` in order; the old
+`firstCommentResult` field still mirrors the first item.
+
+Agency tools accept one `draft.firstComment` through `company_save_post`; read
+its per-target `firstCommentResult` with `company_posts` action `detail`.
+Several comments are currently personal-only. These contracts describe the
+hosted server; the local code in this repository is an older snapshot.
 
 ---
 
