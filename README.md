@@ -121,12 +121,12 @@ PUBLORA_API_URL=https://api.publora.com npm start
 
 Server runs on `http://localhost:3100`
 
-The code in this repository is an April 2026 snapshot of the server. Its tool set is older: it has LinkedIn analytics and workspace tools, and lacks `complete_media`, `delete_media`, `prune_media_reference`, `post_stats`, `profile_stats`, `linkedin_create_reshare` and `linkedin_list_mentionables`. Use the hosted server for the current tools.
+The code in this repository is an April 2026 snapshot of the server. Its tool set is older: it has LinkedIn analytics and workspace tools, and lacks `attach_media`, `complete_media`, `delete_media`, `prune_media_reference`, `account_context`, `post_stats`, `profile_stats`, `linkedin_create_reshare`, `linkedin_list_mentionables` and the `company_*` Agency tools. Use the hosted server for the current tools.
 </details>
 
 ---
 
-## Available Tools (18)
+## Available Tools (20)
 
 The hosted server at `mcp.publora.com/mcp` exposes:
 
@@ -142,14 +142,16 @@ The hosted server at `mcp.publora.com/mcp` exposes:
 ### Media
 | Tool | Description |
 |------|-------------|
+| `attach_media` | Attach an image or video from ChatGPT to an existing post; leaves the post in draft |
 | `get_upload_url` | Get a presigned URL for media upload |
 | `complete_media` | Finalize a file uploaded via `get_upload_url` |
 | `delete_media` | Remove a media slot from a post |
 | `prune_media_reference` | Remove a stale media reference that `delete_media` cannot handle |
 
-### Connections
+### Account and connections
 | Tool | Description |
 |------|-------------|
+| `account_context` | Your plan, available features, publishing quotas and schedule horizon — check before a batch of posts or after a quota error |
 | `list_connections` | List connected social accounts |
 
 ### Statistics (Mastodon and Bluesky, Pro or Premium plan)

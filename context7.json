@@ -7,7 +7,7 @@
   "rules": [
     "Publora MCP server is hosted at mcp.publora.com",
     "Authentication uses Bearer token with Publora API key (sk_...)",
-    "16 MCP tools available for posts, connections, analytics, and workspace",
+    "20 MCP tools for posts, media, account limits and connections, Mastodon and Bluesky statistics, and LinkedIn engagement, plus 12 company_* tools that only work on Agency accounts",
     "Supports 10 platforms: Twitter, LinkedIn, Instagram, Threads, TikTok, YouTube, Facebook, Bluesky, Mastodon, Telegram",
     "No coding required - users describe tasks in natural language",
     "Pricing starts at $5.40/month with full API and MCP access"
