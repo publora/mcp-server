@@ -98,6 +98,6 @@ You should see a list of your connected platforms.
 
 ## What's Next?
 
-- [Available Tools](./tools/overview.md) — all 16 MCP tools
+- [Available Tools](https://docs.publora.com/mcp/tools-reference) — the hosted server's 20 tools ([older local snapshot](./tools/overview.md))
 - [Example Conversations](./examples.md) — common use cases
 - [Troubleshooting](./troubleshooting.md) — common issues

@@ -75,7 +75,7 @@ Add to MCP settings:
 mcporter add publora --transport http --url https://mcp.publora.com --header "Authorization: Bearer sk_your_api_key"
 ```
 
-## Available Tools (16 total)
+## Available Tools (20 total)
 
 ### Posts
 
@@ -86,32 +86,43 @@ mcporter add publora --transport http --url https://mcp.publora.com --header "Au
 | `get_post` | Get post details |
 | `update_post` | Reschedule or change status |
 | `delete_post` | Delete a post |
-| `get_upload_url` | Get media upload URL |
 
-### Connections
+### Media
 
 | Tool | Description |
 |------|-------------|
+| `attach_media` | Attach an image or video from ChatGPT to an existing post |
+| `get_upload_url` | Get media upload URL |
+| `complete_media` | Finalize an uploaded file |
+| `delete_media` | Remove a media file from a post |
+| `prune_media_reference` | Remove a stale media reference |
+
+### Account and connections
+
+| Tool | Description |
+|------|-------------|
+| `account_context` | Plan, features, publishing quotas and schedule horizon |
 | `list_connections` | List connected social accounts |
 
-### LinkedIn Analytics
+### Statistics (Mastodon and Bluesky, Pro or Premium plan)
 
 | Tool | Description |
 |------|-------------|
-| `linkedin_post_stats` | Get post metrics |
-| `linkedin_account_stats` | Get account metrics |
-| `linkedin_followers` | Get follower count/growth |
-| `linkedin_profile_summary` | Get profile overview |
+| `post_stats` | Get post engagement counters |
+| `profile_stats` | Get followers, following and post count |
+
+### LinkedIn Engagement
+
+| Tool | Description |
+|------|-------------|
 | `linkedin_create_reaction` | React to a post |
 | `linkedin_delete_reaction` | Remove reaction |
+| `linkedin_create_comment` | Comment on a post |
+| `linkedin_delete_comment` | Delete a comment |
+| `linkedin_create_reshare` | Reshare a post |
+| `linkedin_list_mentionables` | List people you can @mention |
 
-### Workspace
-
-| Tool | Description |
-|------|-------------|
-| `list_workspace_users` | List team members |
-| `create_workspace_user` | Add team member |
-| `workspace_detach_user` | Remove team member |
+LinkedIn statistics and workspace (managed-user) administration are REST only. Clients also list 12 `company_*` tools; they are for Agency client work and only work on Agency accounts.
 
 ## Example Prompts
 
