@@ -134,9 +134,9 @@ The hosted server at `mcp.publora.com/mcp` exposes:
 | Tool | Description |
 |------|-------------|
 | `list_posts` | List posts with filters (status, platform, dates) |
-| `create_post` | Create a draft or schedule a post; accepts `mediaUrls` and `platformSettings` |
+| `create_post` | Create a draft, schedule a post, or publish now with `publishNow: true`; accepts `mediaUrls` and `platformSettings` |
 | `get_post` | Get post details and status |
-| `update_post` | Edit a draft or scheduled post: content, platforms, schedule, status |
+| `update_post` | Edit a draft or scheduled post: content, platforms, schedule, status, or publish it now with `publishNow: true` |
 | `delete_post` | Delete a post |
 
 ### Media
@@ -154,7 +154,7 @@ The hosted server at `mcp.publora.com/mcp` exposes:
 | `account_context` | Your plan, available features, publishing quotas and schedule horizon — check before a batch of posts or after a quota error |
 | `list_connections` | List connected social accounts |
 
-### Statistics (Mastodon and Bluesky, Pro or Premium plan)
+### Statistics (Mastodon and Bluesky, Pro plan or legacy Premium)
 | Tool | Description |
 |------|-------------|
 | `post_stats` | Engagement counters for published posts |
@@ -281,4 +281,4 @@ npm test
 
 ---
 
-**[Publora](https://publora.com)** — Affordable social media API starting at $5.40/month
+**[Publora](https://publora.com)** — Affordable social media API: free Starter plan with API and MCP access; Pro from $5.99 per account per month ($3.99 billed yearly)
