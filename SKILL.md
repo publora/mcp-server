@@ -104,7 +104,7 @@ mcporter add publora --transport http --url https://mcp.publora.com --header "Au
 | `account_context` | Plan, features, publishing quotas and schedule horizon |
 | `list_connections` | List connected social accounts |
 
-### Statistics (Mastodon and Bluesky, Pro or Premium plan)
+### Statistics (Mastodon and Bluesky, Pro plan or legacy Premium)
 
 | Tool | Description |
 |------|-------------|
