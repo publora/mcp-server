@@ -403,7 +403,7 @@ setInterval(() => {
       sessions.delete(id);
     }
   }
-}, 60 * 1000);
+}, 60 * 1000).unref(); // never keep the process (or `node --test`) alive
 
 // Health check
 app.get("/health", (req, res) => {
