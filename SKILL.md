@@ -122,7 +122,7 @@ mcporter add publora --transport http --url https://mcp.publora.com --header "Au
 | `linkedin_create_reshare` | Reshare a post |
 | `linkedin_list_mentionables` | List people you can @mention |
 
-LinkedIn statistics and workspace (managed-user) administration are REST only. Clients also list 12 `company_*` tools; they are for Agency client work and only work on Agency accounts.
+LinkedIn statistics are REST only. Clients also list 52 `company_*` tools (72 in total) for Agency client work and Company account administration; access follows the Company account type and role. Start Agency client work with the [Agency quickstart](https://docs.publora.com/guides/agency-quickstart).
 
 ## Example Prompts
 

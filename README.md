@@ -170,7 +170,9 @@ The hosted server at `mcp.publora.com/mcp` exposes:
 | `linkedin_create_reshare` | Repost/reshare a LinkedIn post |
 | `linkedin_list_mentionables` | List people you can @mention in a LinkedIn post |
 
-LinkedIn analytics and workspace management are available through the [REST API](https://docs.publora.com), not MCP. Full parameters: [MCP Tools Reference](https://docs.publora.com/mcp/tools-reference).
+LinkedIn analytics is available through the [REST API](https://docs.publora.com), not MCP. Full parameters: [MCP Tools Reference](https://docs.publora.com/mcp/tools-reference).
+
+The hosted server also lists 52 `company_*` tools (72 in total) for Agency client work and Company account administration; access follows your Company account type and role. Start Agency client work with the [Agency quickstart](https://docs.publora.com/guides/agency-quickstart). First comments: [personal posts](https://docs.publora.com/endpoints/create-post#first-comment) and [Agency posts](https://docs.publora.com/guides/agency-first-comments).
 
 ---
 
