@@ -94,7 +94,7 @@ Common issues and solutions for Publora MCP Server.
 
 1. Verify you're connected to the right Publora account
 2. Check that your subscription includes API access
-3. Ensure you're not trying to access another workspace's data
+3. Ensure you're not trying to access another account's data
 
 ---
 

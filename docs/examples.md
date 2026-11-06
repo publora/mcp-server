@@ -158,23 +158,3 @@ Real-world examples of using Publora MCP with AI assistants.
 > - **All platforms (3pm):** 890 total impressions
 >
 > Best engagement: Twitter poll with 3.8% engagement rate.
-
----
-
-## Workspace/Team Management
-
-### View Team Members
-
-> **You:** Who's on my social media team?
-
-> **Claude:** Your workspace has 3 members:
->
-> 1. you@company.com (Admin)
-> 2. marketing@company.com (Member)
-> 3. social@company.com (Member)
-
-### Add a Team Member
-
-> **You:** Add newperson@company.com to my workspace
-
-> **Claude:** Done! Invitation sent to newperson@company.com. They'll receive an email to join your workspace.

@@ -1,6 +1,6 @@
 # Publora MCP Tools Overview
 
-Publora provides 16 MCP tools for managing social media via AI assistants.
+This page lists the tools of the April 2026 code snapshot in this repository. The hosted server at `mcp.publora.com` has a newer set: 20 personal tools and 52 `company_*` tools, documented in the [MCP Tools Reference](https://docs.publora.com/mcp/tools-reference). For Agency client work, start with the [Agency quickstart](https://docs.publora.com/guides/agency-quickstart).
 
 ## Posts (6 tools)
 
@@ -199,43 +199,3 @@ Remove a reaction from a LinkedIn post.
 
 **Example prompts:**
 - "Remove my reaction from this post"
-
----
-
-## Workspace/B2B (3 tools)
-
-### list_workspace_users
-
-List team members in your workspace.
-
-**Parameters:** None
-
-**Example prompts:**
-- "Show my team members"
-- "Who's in my workspace?"
-
----
-
-### create_workspace_user
-
-Add a new user to your workspace.
-
-**Parameters:**
-- `username` (required): Email address
-- `displayName` (optional): Display name
-
-**Example prompts:**
-- "Add john@example.com to my workspace"
-- "Create a new team member"
-
----
-
-### workspace_detach_user
-
-Remove a user from your workspace.
-
-**Parameters:**
-- `userId` (required): User ID to remove
-
-**Example prompts:**
-- "Remove user xyz from my workspace"
