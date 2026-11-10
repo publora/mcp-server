@@ -145,7 +145,7 @@ On X and Threads over-limit text is not rejected: it becomes a multi-part thread
 
 ### "Invalid or missing session"
 
-**Cause:** MCP session expired or not initialized.
+**Cause:** MCP session expired or not initialized. A self-hosted server also returns this when a session is reused with a different API key than the one that created it.
 
 **Solution:** This usually resolves automatically. The server creates a new session on the next request. If persistent:
 
