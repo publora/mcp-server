@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+const crypto = require("crypto");
 const http = require("http");
 const express = require("express");
 const { McpServer } = require("@modelcontextprotocol/sdk/server/mcp.js");
@@ -391,8 +392,9 @@ function fixAcceptHeader(req) {
 const app = express();
 app.use(express.json());
 
-// Session store: sessionId -> { transport, server, createdAt }
+// Session store: sessionId -> { transport, server, keyHash, createdAt }
 const sessions = new Map();
+const hashApiKey = (apiKey) => crypto.createHash("sha256").update(apiKey).digest();
 const SESSION_TTL_MS = 30 * 60 * 1000; // 30 minutes
 const SESSION_MAX = 100;
 
@@ -429,7 +431,7 @@ async function handleMcpRequest(req, res) {
     registerTools(mcpServer, apiRequest);
 
     const transport = new StreamableHTTPServerTransport({
-      sessionIdGenerator: () => require("crypto").randomUUID(),
+      sessionIdGenerator: () => crypto.randomUUID(),
     });
 
     await mcpServer.connect(transport);
@@ -440,7 +442,12 @@ async function handleMcpRequest(req, res) {
         const oldest = sessions.keys().next().value;
         sessions.delete(oldest);
       }
-      sessions.set(transport.sessionId, { transport, server: mcpServer, createdAt: Date.now() });
+      sessions.set(transport.sessionId, {
+        transport,
+        server: mcpServer,
+        keyHash: hashApiKey(apiKey),
+        createdAt: Date.now(),
+      });
     }
 
     transport.onclose = () => {
@@ -450,9 +457,9 @@ async function handleMcpRequest(req, res) {
     return result;
   }
 
-  const sessionId = req.headers["mcp-session-id"];
-  if (sessionId && sessions.has(sessionId)) {
-    return sessions.get(sessionId).transport.handleRequest(req, res, req.body);
+  const session = sessions.get(req.headers["mcp-session-id"]);
+  if (session && crypto.timingSafeEqual(session.keyHash, hashApiKey(apiKey))) {
+    return session.transport.handleRequest(req, res, req.body);
   }
 
   return res.status(400).json({ error: "Invalid or missing session. Send a POST without mcp-session-id to start." });

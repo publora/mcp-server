@@ -184,6 +184,34 @@ describe("POST /mcp with auth", () => {
 });
 
 describe("POST /mcp with invalid session", () => {
+  it("returns 400 when a session is reused with a different API key", async () => {
+    const init = await request(server, "POST", "/", {
+      headers: { Accept: "application/json, text/event-stream", Authorization: "Bearer sk_owner" },
+      body: {
+        jsonrpc: "2.0",
+        id: 1,
+        method: "initialize",
+        params: {
+          protocolVersion: "2024-11-05",
+          capabilities: {},
+          clientInfo: { name: "test", version: "1.0.0" },
+        },
+      },
+    });
+    const sessionId = init.headers["mcp-session-id"];
+    const list = (key) =>
+      request(server, "POST", "/", {
+        headers: {
+          Accept: "application/json, text/event-stream",
+          Authorization: `Bearer ${key}`,
+          "mcp-session-id": sessionId,
+        },
+        body: { jsonrpc: "2.0", id: 2, method: "tools/list", params: {} },
+      });
+    assert.strictEqual((await list("sk_other")).status, 400);
+    assert.strictEqual((await list("sk_owner")).status, 200);
+  });
+
   it("returns 400 for unknown session ID", async () => {
     const res = await request(server, "POST", "/", {
       headers: {
