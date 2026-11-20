@@ -18,7 +18,7 @@ Control your social media directly from AI assistants like Claude, Cursor, or an
 ## Step 1: Get Your API Key
 
 1. Sign up at [publora.com](https://publora.com)
-2. Go to **Settings** → **API**
+2. Go to **API** in the sidebar
 3. Click **Generate API Key**
 4. Copy your key (starts with `sk_`)
 

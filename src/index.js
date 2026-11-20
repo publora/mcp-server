@@ -424,7 +424,7 @@ async function handleMcpRequest(req, res) {
   if (req.method === "POST" && !req.headers["mcp-session-id"]) {
     const mcpServer = new McpServer({
       name: "publora",
-      version: "1.0.0",
+      version: require("../package.json").version,
     });
 
     const apiRequest = createApiClient(apiKey);

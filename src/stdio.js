@@ -21,7 +21,7 @@ const { createApiClient, registerTools } = require("./index.js");
 async function main() {
   const apiKey = process.env.PUBLORA_API_KEY || "";
 
-  const mcpServer = new McpServer({ name: "publora", version: "1.0.0" });
+  const mcpServer = new McpServer({ name: "publora", version: require("../package.json").version });
   const apiRequest = createApiClient(apiKey);
   registerTools(mcpServer, apiRequest);
 

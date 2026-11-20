@@ -25,7 +25,7 @@ This skill provides documentation for connecting AI assistants to Publora via MC
 
 Publora uses **API keys** (not OAuth tokens). Keys never expire and don't require refresh.
 
-**Get your key:** publora.com → Settings → API Keys
+**Get your key:** publora.com → **API** in the sidebar
 
 **MCP Header:** `Authorization: Bearer sk_your_api_key`
 

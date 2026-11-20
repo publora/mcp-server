@@ -23,7 +23,7 @@ Common issues and solutions for Publora MCP Server.
 
 3. Verify your key starts with `sk_`
 
-4. Regenerate your key at [publora.com](https://publora.com) → Settings → API
+4. Regenerate your key at [publora.com](https://publora.com) → **API** in the sidebar
 
 ### Tools Not Showing in AI Client
 
@@ -83,7 +83,7 @@ Common issues and solutions for Publora MCP Server.
 
 1. Check for typos — keys start with `sk_`
 2. Ensure no quotes around the key in the header value
-3. Regenerate key at [publora.com](https://publora.com) → Settings → API
+3. Regenerate key at [publora.com](https://publora.com) → **API** in the sidebar
 4. Verify you're using the correct account
 
 ### "Unauthorized" When Calling Tools
